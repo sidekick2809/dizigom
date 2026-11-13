@@ -41,15 +41,15 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Build Plugins
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
           ./gradlew make makePluginsJson
-          cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
+          find . -name '*.cs3' -path '*/build/*' -exec cp {} $GITHUB_WORKSPACE/builds/ \;
           cp build/plugins.json $GITHUB_WORKSPACE/builds
           cp repo.json $GITHUB_WORKSPACE/builds/repo.json
 
