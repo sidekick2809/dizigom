@@ -50,6 +50,14 @@ yöneticisinden kurabilirsiniz (Cloudstream'in dosya erişim izni açık olmalı
 4. Cloudstream'de **Depo ekle** kısmına `repo.json` içindeki adresi girin
    (aşağıdaki `KULLANICI/REPO` kısmını kendi deponuzla değiştirin).
 
+`raw.githubusercontent.com` bazı ağlarda (ör. Türkiye'deki bazı ISS'ler)
+engellenebilir. Bu durumda Cloudstream "Depo bulunamadı" hatası verir; jsDelivr
+aynasını kullanın:
+
+```
+https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@main/repo-jsdelivr.json
+```
+
 `repo.json`:
 
 ```json
@@ -62,6 +70,10 @@ yöneticisinden kurabilirsiniz (Cloudstream'in dosya erişim izni açık olmalı
   ]
 }
 ```
+
+jsDelivr aynası (`repo-jsdelivr.json`) CI tarafından üretilen
+`builds/plugins-jsdelivr.json` dosyasını kullanır; eklenti ve liste adresleri
+otomatik olarak `cdn.jsdelivr.net` üzerine yazılır.
 
 Yerelde `plugins.json` üretirken depo adresini belirtmek için:
 

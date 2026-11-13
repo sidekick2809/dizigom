@@ -1,0 +1,8 @@
+{
+  "name": "Dizigom (jsDelivr)",
+  "description": "Dizigom eklentisi (dizigom.news) - raw.githubusercontent.com engelli aglar icin",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@builds/plugins-jsdelivr.json"
+  ]
+}
