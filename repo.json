@@ -1,0 +1,8 @@
+{
+  "name": "Dizigom",
+  "description": "Dizigom, FullHDFilmizlesene, Hdfilmcehennemi ve Filmmakinesi eklentileri",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/sidekick2809/dizigom/builds/plugins.json"
+  ]
+}

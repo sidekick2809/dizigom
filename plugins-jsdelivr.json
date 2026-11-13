@@ -1,0 +1,84 @@
+[
+    {
+        "iconUrl": "https://www.dizigom.news/apple-touch-icon.png",
+        "fileHash": "sha256-e2fb69ece6fff8cbf1064114ef6a4d258974485d8105b26101f8be0cf8c46cfa",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/sidekick2809/dizigom",
+        "fileSize": 25686,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "mehmet"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "Anime"
+        ],
+        "version": 2,
+        "internalName": "Dizigom",
+        "description": "Dizigom - T\u00fcrk\u00e7e dizi, film ve anime kayna\u011f\u0131 (dizigom.news)",
+        "url": "https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@builds/Dizigom.cs3",
+        "name": "Dizigom"
+    },
+    {
+        "iconUrl": "https://filmmakinesi.to/favicon.ico",
+        "fileHash": "sha256-18b3ae95691eaaf0a1559753c1f29d2b34ae2e3811426d94dd7ff3909930f5f3",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/sidekick2809/dizigom",
+        "fileSize": 38070,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "sidekick2809"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": 3,
+        "internalName": "Filmmakinesi",
+        "description": "Filmmakinesi - T\u00fcrk\u00e7e dublaj/altyaz\u0131l\u0131 1080p film kayna\u011f\u0131 (filmmakinesi.to)",
+        "url": "https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@builds/Filmmakinesi.cs3",
+        "name": "Filmmakinesi"
+    },
+    {
+        "iconUrl": "https://www.fullhdfilmizlesene.now/favicon.ico",
+        "fileHash": "sha256-b903f7d3afb7c774d9729020796491e565e4312a26af6d2b95191d5ebc6ff8d4",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/sidekick2809/dizigom",
+        "fileSize": 37357,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "sidekick2809"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": 2,
+        "internalName": "FullHDFilmizlesene",
+        "description": "FullHDFilmizlesene - T\u00fcrk\u00e7e dublaj/altyaz\u0131l\u0131 full HD film kayna\u011f\u0131 (fullhdfilmizlesene.now)",
+        "url": "https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@builds/FullHDFilmizlesene.cs3",
+        "name": "FullHDFilmizlesene"
+    },
+    {
+        "iconUrl": "https://www.hdfilmcehennemi.nl/favicon.ico",
+        "fileHash": "sha256-2151c411a73679688825a29d0659c2b3fa4b91275ba82662fcc5a8e4230994ad",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/sidekick2809/dizigom",
+        "fileSize": 38774,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "sidekick2809"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": 3,
+        "internalName": "Hdfilmcehennemi",
+        "description": "Hdfilmcehennemi - T\u00fcrk\u00e7e dublaj/altyaz\u0131l\u0131 HD film kayna\u011f\u0131 (hdfilmcehennemi.nl)",
+        "url": "https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@builds/Hdfilmcehennemi.cs3",
+        "name": "Hdfilmcehennemi"
+    }
+]
