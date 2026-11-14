@@ -1,7 +1,20 @@
-# Dizigom — Cloudstream eklentisi
+# Dizigom — Cloudstream eklentileri
 
-[Cloudstream](https://github.com/recloudstream/cloudstream) için `https://www.dizigom.news`
-kaynağını kullanan bir sağlayıcı (provider) eklentisi.
+[Cloudstream](https://github.com/recloudstream/cloudstream) için Türkçe kaynak
+eklentileri. Dört ayrı eklenti (her biri bağımsız `.cs3` paketi) tek depodan
+sunulur:
+
+| Eklenti | Site | İçerik |
+| --- | --- | --- |
+| Dizigom | `dizigom.news` | Film, dizi, anime |
+| FullHDFilmizlesene | `fullhdfilmizlesene.now` | Film |
+| Hdfilmcehennemi | `hdfilmcehennemi.nl` | Film |
+| Filmmakinesi | `filmmakinesi.to` | Film |
+
+> Alan adları sık değişiyor. Güncelleme adımları ve tüm site notları için
+> **[HAFIZA.md](HAFIZA.md)** dosyasına bakın.
+
+## Dizigom
 
 - Filmler: `/film/<slug>`
 - Diziler: `/diziler/<slug>/` (sezonlar `?sezon=N`)
@@ -30,25 +43,30 @@ Gereksinimler: JDK 17 ve Android SDK (compileSdk 35).
 export JAVA_HOME=/path/to/jdk17
 echo "sdk.dir=/path/to/android-sdk" > local.properties
 
-# Eklenti paketi: Dizigom/build/Dizigom.cs3
-./gradlew Dizigom:make
+# Tüm eklenti paketleri: <Modül>/build/<Modül>.cs3
+./gradlew make
 
 # Depo için plugins.json: build/plugins.json
 ./gradlew makePluginsJson
 ```
 
-`Dizigom.cs3` dosyasını doğrudan cihaza kopyalayıp Cloudstream'in eklenti
+`<Modül>.cs3` dosyasını doğrudan cihaza kopyalayıp Cloudstream'in eklenti
 yöneticisinden kurabilirsiniz (Cloudstream'in dosya erişim izni açık olmalı).
+Normalde buna gerek yoktur: depo adresini ekleyip listeden kurmak yeterlidir.
 
 ## GitHub üzerinden yayınlama
 
 1. Bu projeyi bir GitHub deposuna push edin (`main` veya `master`).
 2. **Settings → Actions → General** altında Actions'ı ve
    **Read and write permissions** ayarını açın.
-3. `.github/workflows/build.yml` her push'ta eklentiyi derleyip `builds`
-   dalına `Dizigom.cs3` ve `plugins.json` olarak yazar.
-4. Cloudstream'de **Depo ekle** kısmına `repo.json` içindeki adresi girin
-   (aşağıdaki `KULLANICI/REPO` kısmını kendi deponuzla değiştirin).
+3. `.github/workflows/build.yml` her push'ta tüm eklentileri derleyip `builds`
+   dalına `<Eklenti>.cs3` dosyalarını ve `plugins.json` listesini yazar.
+
+Install address (Cloudstream → Depo ekle):
+
+```
+https://raw.githubusercontent.com/sidekick2809/dizigom/main/repo.json
+```
 
 `raw.githubusercontent.com` bazı ağlarda (ör. Türkiye'deki bazı ISS'ler)
 engellenebilir. Bu durumda Cloudstream "Depo bulunamadı" hatası verir; jsDelivr
@@ -58,15 +76,17 @@ aynasını kullanın:
 https://cdn.jsdelivr.net/gh/sidekick2809/dizigom@main/repo-jsdelivr.json
 ```
 
-`repo.json`:
+Tek eklenti elle kurmak için yedek paket: `dist/Dizigom.cs3`.
+
+`repo.json` (bu deponun gerçek dosyası):
 
 ```json
 {
   "name": "Dizigom",
-  "description": "Dizigom eklentisi",
+  "description": "Dizigom, FullHDFilmizlesene, Hdfilmcehennemi ve Filmmakinesi eklentileri",
   "manifestVersion": 1,
   "pluginLists": [
-    "https://raw.githubusercontent.com/KULLANICI/REPO/builds/plugins.json"
+    "https://raw.githubusercontent.com/sidekick2809/dizigom/builds/plugins.json"
   ]
 }
 ```
@@ -78,14 +98,17 @@ otomatik olarak `cdn.jsdelivr.net` üzerine yazılır.
 Yerelde `plugins.json` üretirken depo adresini belirtmek için:
 
 ```bash
-REPO=KULLANICI/REPO ./gradlew makePluginsJson
+REPO=sidekick2809/dizigom ./gradlew makePluginsJson
 ```
 
 ## Notlar
 
-- Site HTML yapısını değiştirirse `DizigomProvider.kt` içindeki seçiciler
-  (`a.group.block`, `#bolumler`, `div[data-pv]`, `core.js`) güncellenmelidir.
-- Oynatıcı alan adı değişirse kod bunu `core.js` betiğinin adresinden otomatik
+- Site HTML yapısı değişirse ilgili `*Provider.kt` içindeki seçiciler
+  (`HAFIZA.md` dosyasında listelidir) güncellenmelidir.
+- Oynatıcı alan adı değişirse Dizigom bunu `core.js` betiğinin adresinden otomatik
   bulur; yalnızca hiç betik bulunamazsa yedek adres kullanılır.
+- FullHDFilmizlesene / Hdfilmcehennemi / Filmmakinesi oynatıcıları, akış adresini
+  sayfaya gömülü kodlanmış bir değerden çözer. Algoritma ayrıntıları `HAFIZA.md`
+  içindedir.
 - Bu proje yalnızca kişisel kullanım için bir istemci eklentisidir; içerik
   barındırmaz.

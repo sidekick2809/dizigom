@@ -68,5 +68,7 @@ jobs:
       - name: Purge jsDelivr cache
         run: |
           curl -sS https://purge.jsdelivr.net/gh/sidekick2809/dizigom@builds/plugins-jsdelivr.json > /dev/null || true
-          curl -sS https://purge.jsdelivr.net/gh/sidekick2809/dizigom@builds/Dizigom.cs3 > /dev/null || true
+          for f in $GITHUB_WORKSPACE/builds/*.cs3; do
+            curl -sS "https://purge.jsdelivr.net/gh/sidekick2809/dizigom@builds/$(basename "$f")" > /dev/null || true
+          done
           curl -sS https://purge.jsdelivr.net/gh/sidekick2809/dizigom@main/repo-jsdelivr.json > /dev/null || true
