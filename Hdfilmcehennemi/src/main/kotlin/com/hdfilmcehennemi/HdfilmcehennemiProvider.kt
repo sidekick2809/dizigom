@@ -225,16 +225,25 @@ class HdfilmcehennemiProvider : MainAPI() {
 
         val host = runCatching { java.net.URI(embedUrl).host }.getOrNull().orEmpty()
 
-        // sources: [{file: VAR, type: "hls"}]
+        // sources: [{file: VAR, type: "hls"}]  ve  var VAR = FN("..." .split("X"));
         val varName = Regex("""sources\s*:\s*\[\s*\{[^}]*file\s*:\s*([A-Za-z0-9_]+)""")
             .find(html)?.groupValues?.get(1)
 
-        val encoded = varName?.let { name ->
-            Regex("""var\s+${Regex.escape(name)}\s*=\s*[A-Za-z0-9_]+\s*\(\s*["']([^"']+)["']""")
-                .find(html)?.groupValues?.get(1)
+        var streamUrl: String? = null
+        if (varName != null) {
+            val decl = Regex(
+                """var\s+${Regex.escape(varName)}\s*=\s*([A-Za-z0-9_]+)\s*\(\s*["']([^"']+)["']\s*\.split\(\s*["'](.*?)["']\s*\)"""
+            ).find(html)
+            if (decl != null) {
+                val fnName = decl.groupValues[1]
+                val encoded = decl.groupValues[2]
+                // Ayırıcı karakter sayfaya göre değişir ("!", "~", "@", "^" ...).
+                val delimiter = decl.groupValues[3].ifEmpty { "!" }
+                val rotBase = decoderRotBase(html, fnName)
+                streamUrl = decodeAutoCdn(encoded, delimiter, rotBase, host)
+            }
         }
 
-        var streamUrl = encoded?.let { decodeAutoCdn(it, host) }
         if (streamUrl.isNullOrBlank()) {
             streamUrl = Regex("""https?://[^\s"'<>]+?(?:master\.txt|\.m3u8)[^\s"'<>]*""")
                 .find(html)?.value
@@ -293,10 +302,17 @@ class HdfilmcehennemiProvider : MainAPI() {
     /**
      * "autocdn" oynatıcısının gömülü kod çözücüsünü taklit eder.
      * Algoritma embed alan adına (host) bağlıdır, bu yüzden [host] geçilmelidir.
+     * [delimiter] sayfadaki `.split("X")` ifadesinden, [rotBase] ise çözücü
+     * fonksiyonunun gövdesinden okunur (genelde 96).
      */
-    private fun decodeAutoCdn(encoded: String, host: String): String? {
+    private fun decodeAutoCdn(
+        encoded: String,
+        delimiter: String,
+        rotBase: Int,
+        host: String,
+    ): String? {
         return runCatching {
-            val parts = encoded.split("!").toMutableList()
+            val parts = encoded.split(delimiter).toMutableList()
             if (parts.size < 10) return null
 
             val size = parts.size - 2
@@ -327,7 +343,7 @@ class HdfilmcehennemiProvider : MainAPI() {
                     '7' -> za4 = b64(za4)
                     '3' -> za4 = za4.reversed()
                     else -> {
-                        val shift = (26 - ((sb5[i].code - 96) % 26)) % 26
+                        val shift = (26 - ((sb5[i].code - rotBase) % 26)) % 26
                         za4 = rotShift(za4, shift)
                     }
                 }
@@ -363,6 +379,20 @@ class HdfilmcehennemiProvider : MainAPI() {
 
     private fun b64(value: String): String =
         String(Base64.decode(value, Base64.DEFAULT), Charsets.ISO_8859_1)
+
+    /**
+     * Çözücü fonksiyonunun gövdesindeki harf kaydırma tabanını bulur.
+     * Şablon `charCodeAt(0) - 96` (küçük harf) veya `- 64` (büyük harf) kullanır.
+     */
+    private fun decoderRotBase(html: String, fnName: String): Int {
+        val start = Regex("""var\s+${Regex.escape(fnName)}\s*=\s*function""")
+            .find(html)?.range?.first ?: return 96
+        val body = html.substring(start, minOf(html.length, start + 4000))
+        return when {
+            body.contains("- 64)") -> 64
+            else -> 96
+        }
+    }
 
     private fun rotShift(value: String, shift: Int): String {
         val s = ((shift % 26) + 26) % 26

@@ -102,7 +102,10 @@ olmalıdır; çünkü `Referer`/`Origin` başlıkları buna göre gönderilir.
   1. Sayfada `<iframe data-src="https://hdfilmcehennemi.mobi/video/embed/<id>/?rapidrame_id=...">`.
      (iframe alan adı ana alan adından farklı olabilir; `Referer` film sayfasıdır.)
   2. Embed HTML'inde `sources: [{file: <DEĞİŞKEN>, type: "hls"}]` ve
-     `var <DEĞİŞKEN> = <decoder>("...".split("!"));` bulunur.
+     `var <DEĞİŞKEN> = <decoder>("...".split("X"));` bulunur.
+     **Ayırıcı sabit değildir:** `!`, `~`, `@`, `^` gibi karakterler sayfaya
+     göre değişir; kod ayırıcıyı `.split("X")` ifadesinden okur ve çözücü
+     fonksiyonun gövdesindeki harf tabanını (`- 96` / `- 64`) çıkarır.
   3. "autocdn" çözücüsü uygulanır (aşağıya bakın).
   4. Sonuç: `https://srv9.cdnimagesXXXX.shop/hls/<ad>/txt/master.txt?s=...`
      (Cloudflare yok, doğrudan oynar).
@@ -140,10 +143,12 @@ olmalıdır; çünkü `Referer`/`Origin` başlıkları buna göre gönderilir.
 
 ## "autocdn" çözücüsü (hdfc + filmmakinesi)
 
-Girdi: `encoded` (embed HTML'inden) ve `host` (embed alan adı — **zorunlu**).
+Girdi: `encoded` (embed HTML'inden), `delimiter` (sayfadaki `.split("X")`
+değeri — `!` sabit değildir, `~` / `@` / `^` olabilir), `rotBase` (çözücü
+gövdesindeki harf tabanı, genelde `96`) ve `host` (embed alan adı — **zorunlu**).
 
 ```
-parts = encoded.split("!")
+parts = encoded.split(delimiter)
 size  = parts.size - 2
 pvqo  = size % 7
 h4k   = 8 + (size % 5)
@@ -165,7 +170,7 @@ o = ((m*251 + hz) % 65519) + 1
 for c in reverse(sb5):
     '7' → za4 = base64decode(za4, ISO-8859-1)
     '3' → za4 = reverse(za4)
-    diğer → za4 = harf kaydır: shift = (26 - ((ord(c)-96) % 26)) % 26
+    diğer → za4 = harf kaydır: shift = (26 - ((ord(c)-rotBase) % 26)) % 26
 if (sb5.length > 2048) za4 = reverse(za4)
 
 // karıştırma (shuffle)
