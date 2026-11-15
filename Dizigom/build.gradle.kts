@@ -1,5 +1,5 @@
 // Dizigom extension for Cloudstream
-version = 1
+version = 2
 
 cloudstream {
     description = "Dizigom - Türkçe dizi, film ve anime kaynağı (dizigom.news)"

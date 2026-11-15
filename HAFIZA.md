@@ -4,7 +4,7 @@ Bu dosya, **alan adı (domain) değiştiğinde ne yapılacağını** hızlıca h
 için tutulur. Her eklenti kendi `MainAPI` sınıfında `mainUrl` değişkenini
 kullanır; site yapısı aynı kaldığı sürece **tek satır** değiştirmek yeterlidir.
 
-Son doğrulama: **14 Kasım 2026**
+Son doğrulama: **15 Kasım 2026**
 
 ## Kısa yol: alan adı değiştiğinde
 
@@ -19,8 +19,11 @@ Sonra:
 
 1. `build.gradle.kts` içindeki `iconUrl` alanını da yeni alan adına göre düzelt
    (aynı eklentinin `build.gradle.kts` dosyası).
-2. Bu dosyadaki alan adı/örnek adresleri güncelle.
-3. Derle ve yayınla:
+2. **Aynı dosyadaki `version` değerini bir artır.** Cloudstream bir eklentiyi
+   yalnızca `version` büyüdüğünde günceller; sürüm aynı kalırsa depoyu
+   yenilemek bile güncellemeyi göstermez.
+3. Bu dosyadaki alan adı/örnek adresleri güncelle.
+4. Derle ve yayınla:
 
 ```bash
 export JAVA_HOME=/opt/homebrew/opt/jdk17   # veya kendi JDK 17 yolunuz
@@ -44,6 +47,13 @@ olmalıdır; çünkü `Referer`/`Origin` başlıkları buna göre gönderilir.
 - Arama: `/ara?q=<sorgu>`
 - Oynatıcı: sayfadaki `div[data-pv]` + `core.js` → `<oynatıcı>/assets/js/s.php?s=SLUG`
   → `window.__PLAYER__` JSON → `stream` (m3u8) ve altyazılar.
+- Oynatıcı tipi: `div[data-player][data-player-type]`
+  - `embed` → kaynak var (`data-pv` + `core.js`).
+  - `none` → **sitede kaynak yok**, oynatıcı alanında yalnızca YouTube fragmanı
+    gösterilir. Örn. yeni çıkmış filmler (`/film/oak-caddesinin-sonu`).
+    Bu durumda eklenti "Bağlantı Bulunamadı" yerine
+    "Sitede bu film için oynatılabilir kaynak yok; yalnızca fragman bulunuyor."
+    mesajını gösterir. Fragman, detay sayfasındaki Fragman düğmesindedir.
 - Cloudflare: oynatıcı isteklerinde `CloudflareKiller()` kullanılır.
 
 ## 2) FullHDFilmizlesene (www.fullhdfilmizlesene.now)

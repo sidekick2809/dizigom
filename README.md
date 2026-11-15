@@ -61,6 +61,9 @@ Normalde buna gerek yoktur: depo adresini ekleyip listeden kurmak yeterlidir.
    **Read and write permissions** ayarını açın.
 3. `.github/workflows/build.yml` her push'ta tüm eklentileri derleyip `builds`
    dalına `<Eklenti>.cs3` dosyalarını ve `plugins.json` listesini yazar.
+   **Önemli:** Cloudstream bir eklentiyi yalnızca `version` değeri arttığında
+   günceller. Her yayından önce ilgili modülün `build.gradle.kts` dosyasındaki
+   `version = N` satırını bir artırın.
 
 Install address (Cloudstream → Depo ekle):
 

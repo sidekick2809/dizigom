@@ -188,10 +188,25 @@ class DizigomProvider : MainAPI() {
     ): Boolean {
         val document = app.get(data, headers = requestHeaders).document
 
+        // Oynatıcı tipi: "embed" ise oynatıcı gömülüdür,
+        // "none" ise sitede kaynak yoktur (yalnızca fragman gösterilir).
+        val playerType = document.selectFirst("[data-player]")
+            ?.attr("data-player-type")?.trim().orEmpty()
+
         // <div data-pv="SLUG"> — oynatıcının opak kimliği
         val slug = document.selectFirst("div[data-pv]")
             ?.attr("data-pv")?.trim()?.takeIf { it.isNotBlank() }
-            ?: return false
+
+        if (slug == null) {
+            // Cloudstream'e boş liste yerine anlaşılır bir mesaj göster.
+            throw ErrorLoadingException(
+                if (playerType == "none") {
+                    "Sitede bu film için oynatılabilir kaynak yok; yalnızca fragman bulunuyor."
+                } else {
+                    "Oynatıcı bu sayfada bulunamadı (site yapısı değişmiş olabilir)."
+                }
+            )
+        }
 
         // <script src="https://<oynatıcı>/assets/js/core.js">
         val scriptSrc = document.selectFirst("script[src*=core.js]")
@@ -210,10 +225,14 @@ class DizigomProvider : MainAPI() {
         val playerJson = Regex(
             """window\.__PLAYER__\s*=\s*(\{.*?\});\s*</script>""",
             RegexOption.DOT_MATCHES_ALL,
-        ).find(playerHtml)?.groupValues?.get(1) ?: return false
+        ).find(playerHtml)?.groupValues?.get(1)
+            ?: throw ErrorLoadingException("Oynatıcı yanıtı okunamadı.")
 
-        val player = runCatching { mapper.readTree(playerJson) }.getOrNull() ?: return false
-        val streamUrl = player.get("stream")?.asText()?.takeIf { it.isNotBlank() } ?: return false
+        val player = runCatching { mapper.readTree(playerJson) }.getOrNull()
+            ?: throw ErrorLoadingException("Oynatıcı verisi çözülemedi.")
+
+        val streamUrl = player.get("stream")?.asText()?.takeIf { it.isNotBlank() }
+            ?: throw ErrorLoadingException("Oynatıcı akış adresi vermedi.")
 
         val playerReferer = "$playerBase/"
 
