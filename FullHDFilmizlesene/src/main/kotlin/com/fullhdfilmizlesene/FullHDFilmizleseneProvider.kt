@@ -20,7 +20,6 @@ import com.lagradost.cloudstream3.newHomePageResponse
 import com.lagradost.cloudstream3.newMovieLoadResponse
 import com.lagradost.cloudstream3.newMovieSearchResponse
 import com.lagradost.cloudstream3.newSubtitleFile
-import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.ExtractorLinkType
 import com.lagradost.cloudstream3.utils.newExtractorLink
@@ -62,9 +61,7 @@ class FullHDFilmizleseneProvider : MainAPI() {
         )
     }
 
-    // CloudflareKiller tek örnek olarak tutulur; her istekte yeniden oluşturulursa
-    // WebView çerezleri temizlenir ve her seferinde tekrar çözülür.
-    private val cf by lazy { CloudflareKiller() }
+    private val cf by lazy { CloudflareBypass() }
 
     override val mainPage = mainPageOf(
         "$mainUrl/" to "Son Eklenenler",

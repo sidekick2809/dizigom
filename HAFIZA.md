@@ -54,7 +54,7 @@ olmalıdır; çünkü `Referer`/`Origin` başlıkları buna göre gönderilir.
     Bu durumda eklenti "Bağlantı Bulunamadı" yerine
     "Sitede bu film için oynatılabilir kaynak yok; yalnızca fragman bulunuyor."
     mesajını gösterir. Fragman, detay sayfasındaki Fragman düğmesindedir.
-- Cloudflare: oynatıcı isteklerinde `CloudflareKiller()` kullanılır.
+- Cloudflare: Dizigom Cloudflare challenge'ı göstermez; interceptor gerekmez.
 
 ## 2) FullHDFilmizlesene (www.fullhdfilmizlesene.now)
 
@@ -206,8 +206,42 @@ Kod tarafı: `decodeAutoCdn()` (her iki provider'da birebir aynı).
 ## Bilinen sınırlar
 
 - Üç sitede de **yalnızca film** (`tvTypes = ["Movie"]`) desteklenir.
-- Cloudflare koruması nedeniyle tüm istekler `CloudflareKiller()` interceptor'ı
+- Cloudflare koruması nedeniyle tüm istekler `CloudflareBypass()` interceptor'ı
   ile yapılır; WebView ilk seferde açılır, bu yüzden ilk yükleme yavaş olabilir.
 - Altyazı sunucuları (`subs.rapidvid.org`, `closeload.filmmakinesi.to/vtt/...`)
   Cloudflare arkasında; çerezle bile 403 dönebilir.
 - Hdfilmcehennemi listelerinde sayfalama yoktur (yalnızca 1. sayfa).
+
+## Cloudflare: neden `CloudflareKiller()` değil, `CloudflareBypass()`
+
+Her üç modülde de aynı `CloudflareBypass.kt` vardır (paket adı dışında birebir
+aynı). Cloudstream'in yerleşik `CloudflareKiller()` sınıfı üç nedenle
+kullanılmıyor:
+
+1. `init` bloğu `CookieManager.removeAllCookies()` çağırır. Üç sağlayıcı aynı
+   uygulamada çalıştığı için biri diğerinin `cf_clearance` çerezini siler.
+2. `savedCookies[host]` bir kez dolduktan sonra bir daha doğrulanmaz; çerezin
+   süresi dolsa bile eski çerezle istek atılır (sayfa boş gelir).
+3. Çerez yalnızca OkHttp ile kullanılır. Cloudflare bazı bölgelerde
+   `cf_clearance` çerezini tarayıcının **TLS/HTTP2 parmak izine** bağlar:
+   aynı çerez + aynı User-Agent ile `curl` 403 alırken Chrome parmak izli
+   istemci 200 alır (canlı doğrulandı, 15 Kasım 2026). Bu durumda OkHttp
+   çerezle bile challenge yer.
+
+`CloudflareBypass` sırasıyla şunları dener:
+
+1. Host için önbellekteki çerezle istek (doğrular; challenge gelirse çerezi atar).
+2. Challenge varsa WebView ile çözer (`WebViewResolver`, `useOkhttp = false`),
+   `cf_clearance` çerezini önbelleğe alır ve isteği tekrarlar.
+3. Hâlâ challenge varsa **son çare**: sayfayı WebView'de açar, challenge
+   çözülene kadar bekler ve `document.documentElement.outerHTML` çıktısını
+   sentetik bir HTTP 200 yanıtı olarak eklentiye verir (3 dakika önbellek).
+   Akış/CDN adresleri Cloudflare arkasında olmadığı için oynatma etkilenmez.
+
+Notlar:
+
+- Modüllerde `kotlinx-coroutines` bağımlılığı yok; `intercept` askıya
+  alınamadığı için `runBlocking` yerine stdlib `startCoroutine` + `CountDownLatch`
+  kullanan küçük bir `blockOn()` yardımcısı vardır.
+- Konsolda `WebViewResolver` / `CloudflareBypass` loglarını görmek için
+  Cloudstream ayarlarından hata ayıklama loglarını açın.

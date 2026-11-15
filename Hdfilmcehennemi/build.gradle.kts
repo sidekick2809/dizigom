@@ -1,5 +1,5 @@
 // Hdfilmcehennemi extension for Cloudstream
-version = 2
+version = 3
 
 android {
     namespace = "com.hdfilmcehennemi"

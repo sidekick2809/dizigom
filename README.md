@@ -113,5 +113,9 @@ REPO=sidekick2809/dizigom ./gradlew makePluginsJson
 - FullHDFilmizlesene / Hdfilmcehennemi / Filmmakinesi oynatıcıları, akış adresini
   sayfaya gömülü kodlanmış bir değerden çözer. Algoritma ayrıntıları `HAFIZA.md`
   içindedir.
+- Üç film sitesi Cloudflare korumalıdır. Eklentiler, sayfaları gerektiğinde
+  görünmez bir WebView ile açar (`CloudflareBypass`); bu yüzden ilk yükleme
+  birkaç saniye sürebilir. Cloudstream'in yerleşik `CloudflareKiller` sınıfı
+  bilerek kullanılmaz — nedenleri `HAFIZA.md` içindedir.
 - Bu proje yalnızca kişisel kullanım için bir istemci eklentisidir; içerik
   barındırmaz.
